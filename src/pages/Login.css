@@ -1,0 +1,222 @@
+/* ==================================================
+   DOCUMIND — PAGE DE CONNEXION SOMBRE
+   ================================================== */
+
+/* Organisation générale en deux colonnes. */
+.login-page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+/* Partie gauche : présentation. */
+.login-presentation {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 55px 65px;
+  background: linear-gradient(145deg, #10243e, #0b1729);
+  border-right: 1px solid var(--border-color);
+}
+
+.login-introduction {
+  max-width: 540px;
+}
+
+.login-label {
+  color: #5eead4;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.login-introduction h1 {
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: 1.15;
+  margin: 20px 0;
+}
+
+.login-introduction h1 span {
+  color: #60a5fa;
+}
+
+.login-introduction > p:not(.login-label) {
+  color: var(--text-secondary);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.login-footer {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* Partie droite : formulaire. */
+.login-form-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: var(--bg-primary);
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 440px;
+}
+
+.login-form-container h2 {
+  font-size: 34px;
+  margin: 15px 0 10px;
+}
+
+.login-subtitle,
+.login-note {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.login-subtitle {
+  margin-bottom: 32px;
+}
+
+/* Champs de saisie. */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: var(--accent-primary);
+}
+
+.password-field {
+  display: flex;
+  gap: 10px;
+}
+
+.password-field input {
+  flex: 1;
+  min-width: 0;
+}
+
+.show-password-button {
+  padding: 0 14px;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Bouton principal de connexion. */
+.login-submit-button {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.login-submit-button:hover {
+  background-color: var(--accent-hover);
+}
+
+.login-note {
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+/* Adaptation aux écrans mobiles. */
+@media (max-width: 850px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-presentation {
+    padding: 30px;
+    gap: 25px;
+  }
+
+  .login-introduction h1 {
+    font-size: 32px;
+  }
+
+  .login-footer {
+    display: none;
+  }
+
+  .login-form-section {
+    padding: 40px 25px;
+  }
+}
+
+/* Affichage des erreurs d'authentification. */
+.login-error {
+  color: #fca5a5;
+  background-color: #451a1a;
+  border: 1px solid #7f1d1d;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* Désactiver visuellement le bouton pendant la connexion. */
+.login-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Message indiquant le changement obligatoire. */
+.password-change-notice {
+  padding: 15px;
+  margin: 20px 0 28px;
+  background-color: #302615;
+  color: #fcd34d;
+  border: 1px solid #78551b;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Bouton permettant d'annuler le changement. */
+.cancel-password-button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 13px;
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancel-password-button:hover {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.cancel-password-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

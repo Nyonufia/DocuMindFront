@@ -1,0 +1,90 @@
+
+/* ==========================================
+   DOCUMIND — ÉVOLUTION DES DOCUMENTS
+   ========================================== */
+
+/* Conteneur principal du graphique. */
+.documents-chart {
+  width: 100%;
+  min-width: 0;
+  min-height: 330px;
+  box-sizing: border-box;
+
+  padding: 20px;
+  border: 1px solid #31567c;
+  border-radius: 14px;
+
+  background: linear-gradient(
+    135deg,
+    #10243b,
+    #08182d
+  );
+}
+
+/* En-tête avec icône et titre. */
+.documents-chart-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.documents-chart-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.documents-chart-header span {
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+/* Carré contenant l'icône. */
+.documents-chart-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+
+  color: #ffffff;
+  background: #173d68;
+  border-radius: 10px;
+}
+
+/* Zone du graphique Recharts. */
+.documents-chart-area {
+  width: 100%;
+  height: 250px;
+  margin-top: 20px;
+}
+
+/* Message lorsque les statistiques sont absentes. */
+.documents-chart-empty {
+  min-height: 240px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  color: #60a5fa;
+  text-align: center;
+}
+
+.documents-chart-empty p {
+  margin: 0;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.documents-chart-empty span {
+  max-width: 340px;
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.6;
+}

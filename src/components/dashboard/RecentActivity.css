@@ -1,0 +1,126 @@
+/* ==========================================
+   DOCUMIND — ACTIVITÉ RÉCENTE
+   ========================================== */
+
+/* Conteneur principal. */
+.recent-activity {
+  width: 100%;
+  min-width: 0;
+  min-height: 290px;
+  box-sizing: border-box;
+  padding: 20px;
+
+  background: linear-gradient(135deg, #10243b, #08182d);
+  border: 1px solid #31567c;
+  border-radius: 14px;
+}
+
+/* En-tête du panneau. */
+.recent-activity-header,
+.recent-activity-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.recent-activity-header {
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #31567c;
+}
+
+.recent-activity-title {
+  color: #60a5fa;
+}
+
+.recent-activity-title h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.recent-activity-link {
+  color: #bfdbfe;
+  font-size: 13px;
+}
+
+/* Liste des événements. */
+.recent-activity-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #24415f;
+}
+
+.recent-activity-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+
+  color: #60a5fa;
+  background: #173d68;
+  border-radius: 10px;
+}
+
+.recent-activity-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.recent-activity-details strong {
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.recent-activity-details p {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.recent-activity-date {
+  color: #cbd5e1;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* Message lorsque la liste est vide. */
+.recent-activity-empty {
+  min-height: 190px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  color: #60a5fa;
+}
+
+.recent-activity-empty p {
+  color: #cbd5e1;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Adaptation aux petits écrans. */
+@media (max-width: 600px) {
+  .recent-activity-item {
+    flex-wrap: wrap;
+  }
+
+  .recent-activity-date {
+    width: 100%;
+    padding-left: 50px;
+  }
+}

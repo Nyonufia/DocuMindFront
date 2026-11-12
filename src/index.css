@@ -1,0 +1,49 @@
+
+/* ==================================================
+   DOCUMIND — THÈME SOMBRE
+   Variables globales de l'application
+   ================================================== */
+
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+
+  /* Couleurs principales */
+  --bg-primary: #080f1d;
+  --bg-sidebar: #0d192b;
+  --bg-card: #111f33;
+  --bg-input: #16253a;
+
+  /* Couleurs du texte */
+  --text-primary: #f1f5f9;
+  --text-secondary: #a5b4ca;
+
+  /* Couleurs d'accentuation */
+  --accent-primary: #2563eb;
+  --accent-hover: #1d4ed8;
+
+  /* Bordures et statuts */
+  --border-color: #25364d;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+/* Réinitialisation des styles du navigateur. */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}

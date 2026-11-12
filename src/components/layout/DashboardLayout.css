@@ -1,0 +1,344 @@
+
+/* Structure principale des tableaux de bord DocuMind. */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+/* Menu latéral. */
+.dashboard-sidebar {
+  width: 260px;
+  min-width: 260px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+}
+
+.sidebar-brand {
+  padding: 25px 20px;
+}
+
+.sidebar-brand .documind-logo-image {
+  max-width: 210px;
+}
+
+.sidebar-navigation {
+  flex: 1;
+  padding: 20px 15px;
+}
+
+.sidebar-section-title {
+  margin: 0 12px 20px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: var(--text-secondary);
+}
+
+.sidebar-menu-item {
+  padding: 14px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.sidebar-menu-item.active {
+  background-color: #1d3556;
+  color: white;
+  border-left: 3px solid var(--accent-primary);
+  font-weight: 600;
+}
+
+/* Profil et déconnexion. */
+.sidebar-footer {
+  padding: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sidebar-avatar,
+.header-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #203c64;
+  color: #dbeafe;
+  font-weight: bold;
+  border-radius: 10px;
+}
+
+.sidebar-avatar {
+  width: 42px;
+  height: 42px;
+}
+
+.sidebar-user strong {
+  font-size: 13px;
+}
+
+.sidebar-user p {
+  margin: 5px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.sidebar-logout {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sidebar-logout:hover {
+  background-color: var(--bg-card);
+  color: white;
+}
+
+/* En-tête et contenu principal. */
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-header {
+  height: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 35px;
+  background-color: var(--bg-sidebar);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header-breadcrumb {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.header-avatar {
+  width: 38px;
+  height: 38px;
+}
+
+.dashboard-content {
+  padding: 35px;
+}
+
+/* Adaptation aux écrans plus petits. */
+@media (max-width: 850px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .dashboard-sidebar {
+    width: 100%;
+    min-width: 0;
+    min-height: auto;
+  }
+
+  .sidebar-navigation {
+    padding: 10px 15px;
+  }
+
+  .dashboard-content {
+    padding: 20px;
+  }
+}
+
+/* ==================================================
+   MESSAGE D'ACCUEIL DES TABLEAUX DE BORD
+   ================================================== */
+
+/* Conteneur du message personnalisé. */
+.dashboard-welcome {
+  margin-bottom: 30px;
+}
+
+/* Titre principal. */
+.dashboard-welcome h1 {
+  margin: 0 0 12px;
+  color: var(--text-primary);
+  font-size: clamp(28px, 3vw, 38px);
+  font-weight: 700;
+}
+
+/* Mettre le prénom en évidence. */
+.dashboard-welcome h1 span {
+  color: #3b82f6;
+}
+
+/* Description sous le message d'accueil. */
+.dashboard-welcome p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   ICÔNES DU MENU LATÉRAL
+   ========================================== */
+
+.sidebar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sidebar-menu-item svg {
+  width: 21px;
+  height: 21px;
+  flex-shrink: 0;
+  color: #cbd5e1;
+}
+
+/* Icône blanche dans le menu sélectionné. */
+.sidebar-menu-item.active svg {
+  color: #ffffff;
+}
+
+/* ==========================================
+   PROFIL ET DÉCONNEXION
+   ========================================== */
+
+.sidebar-user-info {
+  min-width: 0;
+}
+
+.sidebar-user-info strong {
+  display: block;
+  color: #ffffff;
+}
+
+.sidebar-user-info p {
+  margin: 4px 0 0;
+  color: #a5b4ca;
+}
+
+.sidebar-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.sidebar-logout svg {
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   EN-TÊTE DU TABLEAU DE BORD
+   ========================================== */
+
+.header-navigation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.header-home-icon {
+  color: #1d9bff;
+  flex-shrink: 0;
+}
+
+.header-separator {
+  color: #35506d;
+}
+
+.header-breadcrumb {
+  color: #cbd5e1;
+}
+
+.header-slash {
+  color: #8295ad;
+}
+
+.header-current-page {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-notification {
+  display: flex;
+  align-items: center;
+  color: #dbeafe;
+}
+
+.header-divider {
+  width: 1px;
+  height: 30px;
+  background: #29415f;
+}
+
+.header-chevron {
+  color: #cbd5e1;
+}
+
+/* Aligner les icônes du menu avec leurs textes. */
+.sidebar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sidebar-menu-item svg {
+  flex-shrink: 0;
+  width: 21px;
+  height: 21px;
+}
+
+/* Aligner les éléments du bouton de déconnexion. */
+.sidebar-logout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Aligner les icônes de l'en-tête. */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+
+/* ==========================================
+   ADAPTATION AUX PETITS ÉCRANS
+   ========================================== */
+
+@media (max-width: 700px) {
+  .header-navigation {
+    gap: 7px;
+  }
+
+  .header-breadcrumb,
+  .header-separator {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 10px;
+  }
+}

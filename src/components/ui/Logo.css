@@ -1,0 +1,16 @@
+
+/* Affichage de l'image du logo DocuMind. */
+
+.documind-logo {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.documind-logo-image {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  object-fit: contain;
+}

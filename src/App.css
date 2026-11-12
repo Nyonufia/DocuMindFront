@@ -1,0 +1,104 @@
+
+/* Page d'accueil temporaire de DocuMind. */
+
+#root {
+  min-height: 100vh;
+}
+
+.welcome-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(
+      circle at 70% 20%,
+      #142b50 0%,
+      transparent 45%
+    ),
+    var(--bg-primary);
+}
+
+.welcome-card {
+  width: 100%;
+  max-width: 720px;
+  padding: 48px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* Logo et identité de l'application. */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 60px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.brand-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-primary);
+  border-radius: 12px;
+  color: white;
+}
+
+/* Présentation du projet. */
+.welcome-label {
+  color: var(--success);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.welcome-card h1 {
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 1.2;
+  margin: 20px 0;
+}
+
+.welcome-card h1 span {
+  color: #60a5fa;
+}
+
+.welcome-description {
+  max-width: 520px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+/* Bouton principal. */
+.primary-button {
+  margin-top: 28px;
+  padding: 14px 28px;
+  background-color: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background-color: var(--accent-hover);
+}
+
+/* Adapter la page aux petits écrans. */
+@media (max-width: 600px) {
+  .welcome-card {
+    padding: 28px;
+  }
+
+  .brand {
+    margin-bottom: 40px;
+  }
+}

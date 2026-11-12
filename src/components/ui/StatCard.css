@@ -1,0 +1,89 @@
+/* Carte statistique du tableau de bord. */
+.stat-card {
+  padding: 24px;
+  background-color: #111f33;
+  border: 1px solid #25364d;
+  border-radius: 14px;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+
+/* Organisation du titre et de l'icône. */
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.stat-card-title {
+  color: #a5b4ca;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+
+
+/* Conteneur des icônes statistiques. */
+.stat-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 52px;
+  height: 52px;
+
+  background: linear-gradient(
+    135deg,
+    #174b91,
+    #0c2e59
+  );
+
+  color: #60a5fa;
+
+  border: 1px solid #245ca0;
+  border-radius: 12px;
+}
+
+
+
+/* Valeur principale. */
+.stat-card-value {
+  margin-top: 22px;
+  color: #f1f5f9;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+/* Texte complémentaire. */
+.stat-card-description {
+  margin: 8px 0 0;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* Couleurs des bordures selon les indicateurs. */
+.stat-card.stat-card--cyan {
+  border: 1.5px solid #009dff;
+}
+
+.stat-card.stat-card--blue {
+  border: 1.5px solid #277dff;
+}
+
+.stat-card.stat-card--purple {
+  border: 1.5px solid #b46aff;
+}
+
+.stat-card.stat-card--pink {
+  border: 1.5px solid #ff416d;
+}
+
+/* Icônes blanches et visibles. */
+.stat-card-icon svg {
+  color: #ffffff;
+  stroke: currentColor;
+}

@@ -1,0 +1,104 @@
+
+/* ==========================================
+   DOCUMIND — ACTIONS RAPIDES
+   ========================================== */
+
+/* Panneau principal des actions rapides. */
+.quick-actions {
+  width: 100%;
+  min-width: 0;
+  min-height: 290px;
+  box-sizing: border-box;
+
+  padding: 20px;
+  background: linear-gradient(135deg, #10243b, #08182d);
+  border: 1px solid #31567c;
+  border-radius: 14px;
+}
+
+/* Titre et icône du panneau. */
+.quick-actions-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #31567c;
+
+  color: #60a5fa;
+}
+
+.quick-actions-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+/* Disposer les quatre actions en grille. */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+/* Style commun des cartes d'action. */
+.quick-action {
+  min-height: 88px;
+  padding: 14px 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  border: 1px solid var(--action-color);
+  border-radius: 12px;
+  background: var(--action-bg);
+
+  color: #ffffff;
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.quick-action svg {
+  color: var(--action-color);
+}
+
+.quick-action span {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* Couleurs propres à chaque action. */
+.quick-action--blue {
+  --action-color: #009dff;
+  --action-bg: #103a65;
+}
+
+.quick-action--purple {
+  --action-color: #b46aff;
+  --action-bg: #332a63;
+}
+
+.quick-action--green {
+  --action-color: #22c9a2;
+  --action-bg: #123e40;
+}
+
+.quick-action--pink {
+  --action-color: #ff668a;
+  --action-bg: #522b45;
+}
+
+/* Effet visuel au survol. */
+.quick-action:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
