@@ -1,0 +1,516 @@
+/* Page de recherche documentaire DocuMind. */
+
+.rag-page {
+  width: 100%;
+  color: #f5f8ff;
+}
+
+.rag-page-heading {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.rag-page-heading h1 {
+  font-size: 30px;
+  margin: 0 0 8px;
+}
+
+.rag-page-heading p {
+  margin: 0;
+  color: #a9c5eb;
+  line-height: 1.6;
+}
+
+.rag-heading-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #12457d;
+  color: #fff;
+}
+
+.rag-search-form {
+  display: flex;
+  gap: 14px;
+  padding: 12px;
+  background: #0e2037;
+  border: 1px solid #254b77;
+  border-radius: 14px;
+}
+
+.rag-search-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid #2879df;
+  border-radius: 10px;
+  outline: none;
+  color: #fff;
+  background: #142b49;
+  font-size: 15px;
+}
+
+.rag-search-form input::placeholder {
+  color: #a8bdd9;
+}
+
+.rag-search-form button,
+.rag-comment-box button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px 24px;
+  background: #0866e9;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rag-search-form button:disabled,
+.rag-comment-box button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.rag-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  margin: 14px 0 28px;
+}
+
+.rag-suggestions span {
+  color: #c5d6f0;
+  font-size: 13px;
+}
+
+.rag-suggestions button {
+  padding: 9px 15px;
+  border-radius: 22px;
+  border: 1px solid #305782;
+  background: #112843;
+  color: #e7f1ff;
+  cursor: pointer;
+}
+
+.rag-content-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.rag-answer-panel,
+.rag-side-panel {
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid #285481;
+  background: linear-gradient(145deg, #102641, #091a2e);
+}
+
+.rag-panel-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.rag-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #63a9ff;
+}
+
+.rag-panel-title h2 {
+  color: #fff;
+  margin: 0;
+  font-size: 18px;
+}
+
+.rag-answer-text {
+  line-height: 1.9;
+  white-space: pre-wrap;
+}
+
+.rag-answer-text p {
+  margin: 0 0 22px;
+}
+
+.rag-sources {
+  padding-top: 20px;
+  border-top: 1px solid #28517a;
+}
+
+.rag-sources h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.rag-source {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 9px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #173354;
+}
+
+.rag-source svg {
+  flex-shrink: 0;
+  color: #4a9dff;
+}
+
+.rag-source strong {
+  font-size: 13px;
+}
+
+.rag-source p {
+  margin: 5px 0 0;
+  color: #a8c4e6;
+  font-size: 12px;
+}
+
+.rag-feedback {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid #28517a;
+}
+
+.rag-feedback span {
+  margin-right: 5px;
+  font-size: 13px;
+}
+
+.rag-feedback button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid #37628e;
+  background: #152d4b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.rag-feedback .selected-positive {
+  border-color: #10b981;
+  color: #5ee5b4;
+}
+
+.rag-feedback .selected-negative {
+  border-color: #f87171;
+  color: #fda4af;
+}
+
+.rag-feedback .rag-comment-button {
+  margin-left: auto;
+}
+
+.rag-comment-box {
+  margin-top: 15px;
+}
+
+.rag-comment-box textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #37628e;
+  border-radius: 10px;
+  background: #142b49;
+  color: #fff;
+  resize: vertical;
+  font: inherit;
+}
+
+.rag-comment-box button {
+  margin-top: 10px;
+}
+
+.rag-feedback-message {
+  color: #7de7b6;
+  font-size: 13px;
+}
+
+.rag-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rag-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.rag-history-list button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 13px 10px;
+  text-align: left;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #eaf3ff;
+  cursor: pointer;
+}
+
+.rag-history-list button:hover {
+  background: #173b66;
+}
+
+.rag-history-list svg {
+  flex-shrink: 0;
+  color: #75b5ff;
+}
+
+.rag-history-list span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.rag-tips {
+  padding-left: 22px;
+  color: #d5e6fb;
+  line-height: 2.2;
+  font-size: 13px;
+}
+
+.rag-muted {
+  color: #a8c4e6;
+  font-size: 14px;
+}
+
+.rag-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  text-align: center;
+  color: #73b2ff;
+}
+
+.rag-empty h3 {
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.rag-empty p {
+  color: #a8c4e6;
+  max-width: 380px;
+}
+
+.rag-error,
+.rag-abstention {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px;
+  border-radius: 9px;
+  margin-bottom: 16px;
+  background: #422b31;
+  color: #ffb4b4;
+}
+
+.rag-spin {
+  animation: rag-rotation 1s linear infinite;
+}
+
+@keyframes rag-rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1100px) {
+  .rag-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .rag-page-heading h1 {
+    font-size: 23px;
+  }
+
+  .rag-search-form {
+    flex-direction: column;
+  }
+
+  .rag-search-form button {
+    width: 100%;
+  }
+
+  .rag-answer-panel,
+  .rag-side-panel {
+    padding: 16px;
+  }
+}
+
+
+/* =========================================
+   AMÉLIORATION DES SOURCES DOCUMENTAIRES
+========================================= */
+
+.rag-sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.rag-source {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px;
+  border: 1px solid #305780;
+  border-radius: 11px;
+  background: #173354;
+}
+
+.rag-source-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: #164b83;
+  color: #69b2ff;
+}
+
+.rag-source-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rag-source-info strong {
+  display: block;
+  color: #fff;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.rag-source-info p {
+  margin: 5px 0 0;
+  color: #a8c4e6;
+  font-size: 12px;
+}
+
+/* Bouton Consulter en vert */
+.rag-source-view-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-left: auto;
+  padding: 10px 15px;
+  border: 1px solid #10b981;
+  border-radius: 9px;
+  background: #047857;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+/* Vert plus clair au survol */
+.rag-source-view-button:hover:not(:disabled) {
+  background: #059669;
+}
+
+/* Bouton désactivé */
+.rag-source-view-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   AMÉLIORATION DES BONNES PRATIQUES
+========================================= */
+
+.rag-practices-panel {
+  padding-bottom: 24px;
+}
+
+.rag-practices-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.rag-practice-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #142d4a;
+  border: 1px solid #244a73;
+}
+
+.rag-practice-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: #1a4775;
+  color: #72b7ff;
+}
+
+.rag-practice-item p {
+  margin: 0;
+  color: #dcecff;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   AMÉLIORATIONS RESPONSIVES
+========================================= */
+
+@media (max-width: 650px) {
+  .rag-source {
+    flex-wrap: wrap;
+  }
+
+  .rag-source-view-button {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .rag-practice-item {
+    align-items: flex-start;
+  }
+}

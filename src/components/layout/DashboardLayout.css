@@ -342,3 +342,47 @@
     gap: 10px;
   }
 }
+
+
+/* =========================================
+   NAVIGATION REACT ROUTER
+========================================= */
+
+/* Conserver l'apparence des menus existants. */
+.sidebar-menu-item {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* Supprimer le soulignement des liens. */
+.sidebar-menu-item:hover,
+.sidebar-menu-item:focus,
+.sidebar-menu-item:visited {
+  text-decoration: none;
+}
+
+/* Conserver la couleur du texte dans les menus actifs. */
+.sidebar-menu-item.active {
+  color: #ffffff;
+}
+
+/* Rendre l'icône d'accueil cliquable. */
+.header-home-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+/* Éviter la modification de couleur des liens. */
+.header-home-link:visited {
+  color: inherit;
+}
+
+/* Améliorer l'accessibilité au clavier. */
+.sidebar-menu-item:focus-visible,
+.header-home-link:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px;
+}

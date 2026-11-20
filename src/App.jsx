@@ -1,54 +1,156 @@
 
-import Login from "./pages/Login";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
+import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import EditorDashboard from "./pages/EditorDashboard";
 import EmployeeDashboard from "./pages/EmployeeDashboard";
-// Importer le Hook personnalisé pour accéder à l'utilisateur connecté.
+
+import DashboardLayout from "./components/layout/DashboardLayout";
 import { useAuth } from "./contexts/useAuth";
 
-// Sélectionner l'interface selon le rôle du compte connecté.
-function App() {
+import RechercheDocumentaire from "./pages/RechercheDocumentaire";
+import DocumentsIndexation from "./pages/DocumentsIndexation";
 
-  const {
-    user,
-    isAuthenticated,
-    logout
-  } = useAuth();
-
-  // Afficher la connexion tant que l'accès est interdit.
-  if (!isAuthenticated) {
-    return <Login />;
-  }
-
-  // Administrateur.
-  if (user.id_role === 3) {
-    return <AdminDashboard />;
-  }
-
-  // Éditeur.
-  if (user.id_role === 2) {
-    return <EditorDashboard />;
-  }
-
-  // Employé.
-  if (user.id_role === 1) {
-    return <EmployeeDashboard />;
-  }
-
-  // Bloquer les rôles inconnus.
+// Page provisoire pour les fonctionnalités à développer.
+function PageEnConstruction({ titre }) {
   return (
-    <main style={{ padding: "40px" }}>
-      <h1>Accès non configuré</h1>
+    <div>
+      <h1>{titre}</h1>
+      <p>Cette fonctionnalité sera bientôt disponible.</p>
+    </div>
+  );
+}
 
-      <p>
-        Aucun tableau de bord n'est associé à votre rôle.
-      </p>
+// Sélectionner le tableau de bord selon le rôle de l'utilisateur.
+function TableauDeBord() {
+  const { user } = useAuth();
 
-      <button type="button" onClick={logout}>
-        Se déconnecter
-      </button>
-    </main>
+  if (user?.id_role === 3) return <AdminDashboard />;
+  if (user?.id_role === 2) return <EditorDashboard />;
+  if (user?.id_role === 1) return <EmployeeDashboard />;
+
+  return <p>Aucun tableau de bord associé à ce rôle.</p>;
+}
+
+// Protéger les pages selon l'authentification et les rôles.
+function PageProtegee({ children, roles }) {
+  const { user, isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (roles && !roles.includes(user?.id_role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return children;
+}
+
+// Afficher le layout commun avec la navigation latérale.
+// Les tableaux de bord conservent leur propre présentation.
+function PageAvecLayout({ titre, children }) {
+  const { user } = useAuth();
+
+  const nomsRoles = {
+    1: "Employé",
+    2: "Éditeur",
+    3: "Administrateur"
+  };
+
+  return (
+    <DashboardLayout roleName={nomsRoles[user?.id_role]}>
+      {children || <PageEnConstruction titre={titre} />}
+    </DashboardLayout>
+  );
+}
+
+// Définir les routes principales de DocuMind.
+function App() {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        {/* Connexion */}
+        <Route
+          path="/login"
+          element={
+            isAuthenticated
+              ? <Navigate to="/dashboard" replace />
+              : <Login />
+          }
+        />
+
+        {/* Tableau de bord selon le rôle */}
+        <Route
+          path="/dashboard"
+          element={
+            <PageProtegee>
+              <TableauDeBord />
+            </PageProtegee>
+          }
+        />
+
+        {/* Recherche documentaire */}
+        <Route
+          path="/recherche"
+          element={
+            <PageProtegee>
+              <PageAvecLayout titre="Recherche documentaire">
+                <RechercheDocumentaire />
+              </PageAvecLayout>
+            </PageProtegee>
+          }
+        />
+
+        {/* Documents et indexation : Administrateur et Éditeur */}
+        <Route
+          path="/documents"
+          element={
+            <PageProtegee roles={[2, 3]}>
+              <PageAvecLayout titre="Documents et indexation">
+                <DocumentsIndexation />
+              </PageAvecLayout>
+            </PageProtegee>
+          }
+        />
+
+        {/* Utilisateurs et accès : Administrateur */}
+        <Route
+          path="/utilisateurs"
+          element={
+            <PageProtegee roles={[3]}>
+              <PageAvecLayout titre="Utilisateurs et accès" />
+            </PageProtegee>
+          }
+        />
+
+        {/* Qualité et audit : Administrateur */}
+        <Route
+          path="/qualite"
+          element={
+            <PageProtegee roles={[3]}>
+              <PageAvecLayout titre="Qualité et audit" />
+            </PageProtegee>
+          }
+        />
+
+        {/* Redirection des routes inconnues */}
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to={isAuthenticated ? "/dashboard" : "/login"}
+              replace
+            />
+          }
+        />
+
+      </Routes>
+    </BrowserRouter>
   );
 }
 
