@@ -299,7 +299,7 @@
   font-size: 19px;
 }
 
-.documents-modal-header > button {
+.documents-modal-header>button {
   border: 0;
   background: transparent;
   color: white;
@@ -533,3 +533,202 @@
     font-size: 11px;
   }
 }
+
+/* =========================================
+   DOCUMIND — PAGINATION DES DOCUMENTS
+   Le tableau et la pagination sont deux éléments
+   consécutifs dans .documents-page (gap: 24px).
+========================================= */
+
+/* Supprimer l'arrondi inférieur uniquement lorsqu'une
+   pagination suit immédiatement le tableau. */
+.documents-table-wrapper:has(+ .documents-pagination) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Compenser l'espacement du conteneur flex.
+   Important : la pagination doit suivre directement
+   .documents-table-wrapper dans le JSX. */
+.documents-table-wrapper+.documents-pagination {
+  margin-top: -24px;
+}
+
+.documents-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #142b46;
+  border: 1px solid #294c71;
+  border-top: 0;
+  border-radius: 0 0 13px 13px;
+}
+
+.documents-pagination-info {
+  color: #a6b4ca;
+  font-size: 14px;
+}
+
+.documents-pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.documents-pagination-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 14px;
+  background: #17253d;
+  border: 1px solid #344762;
+  border-radius: 8px;
+  color: #e2e8f0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.documents-pagination-actions button:hover:not(:disabled) {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.documents-pagination-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .documents-pagination {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px;
+  }
+
+  .documents-pagination-actions {
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+/* Bouton de gestion des accès, réservé à l'Éditeur. */
+.documents-manage-access {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 15px;
+  border: 1px solid #2563eb;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.documents-manage-access:hover {
+  background: #1d4ed8;
+}
+
+.documents-manage-access:focus-visible {
+  outline: 2px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+/* DOCUMIND — Gestion des accès aux collections */
+.documents-access-modal {
+  max-width: 620px;
+}
+
+.documents-access-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.documents-access-members {
+  margin-top: 24px;
+}
+
+.documents-access-members h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+
+.documents-access-member {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #344762;
+}
+
+.documents-access-member button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid #7f3548;
+  border-radius: 8px;
+  color: #fecaca;
+  background: #421c29;
+  cursor: pointer;
+}
+
+.documents-access-member button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.documents-access-error,
+.documents-access-success {
+  padding: 11px;
+  border-radius: 8px;
+}
+
+.documents-access-error {
+  background: #421c29;
+  color: #fecaca;
+}
+
+.documents-access-success {
+  background: #123d34;
+  color: #a7f3d0;
+}
+
+@media (max-width: 600px) {
+  .documents-access-member {
+    flex-wrap: wrap;
+  }
+}
+
+/* Onglets du formulaire de gestion des accès DocuMind */
+.documents-access-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0 22px; }
+.documents-access-tab { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 11px 9px; border: 1px solid #496382; border-radius: 8px; background: #0e2037; color: #e2e8f0; font: inherit; font-size: 14px; cursor: pointer; }
+.documents-access-tab.is-active { background: #2563eb; border-color: #3b82f6; color: #fff; }
+.documents-access-tab:hover:not(.is-active) { background: #203a59; }
+.documents-access-tab:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }
+.documents-access-form { display: flex; flex-direction: column; gap: 16px; }
+@media (max-width: 480px) { .documents-access-tabs { gap: 6px; } .documents-access-tab { font-size: 12px; padding: 10px 5px; } }
+
+/* Onglets du formulaire de gestion des accès DocuMind */
+.documents-access-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0 22px; }
+.documents-access-tab { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 11px 9px; border: 1px solid #496382; border-radius: 8px; background: #0e2037; color: #e2e8f0; font: inherit; font-size: 14px; cursor: pointer; }
+.documents-access-tab.is-active { background: #2563eb; border-color: #3b82f6; color: #fff; }
+.documents-access-tab:hover:not(.is-active) { background: #203a59; }
+.documents-access-tab:focus-visible { outline: 2px solid #93c5fd; outline-offset: 2px; }
+.documents-access-form { display: flex; flex-direction: column; gap: 16px; }
+@media (max-width: 480px) { .documents-access-tabs { gap: 6px; } .documents-access-tab { font-size: 12px; padding: 10px 5px; } }
+
+/* Action de révocation : distinction visuelle avec l’attribution. */
+.documents-revoke-button:not(:disabled) { background: #b45309; border-color: #b45309; }
+.documents-revoke-button:not(:disabled):hover { background: #92400e; }

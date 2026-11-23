@@ -38,6 +38,7 @@ const titresPages = {
   "/recherche": "Recherche documentaire",
   "/documents": "Documents et indexation",
   "/utilisateurs": "Utilisateurs et accès",
+  "/mes-feedbacks": "Mes feedbacks",
   "/qualite": "Qualité et audit"
 };
 
@@ -61,6 +62,7 @@ const menus = [
     icone: Layers,
     roles: [1, 2, 3]
   },
+
   {
     label: "Utilisateurs et accès",
     chemin: "/utilisateurs",
@@ -69,9 +71,9 @@ const menus = [
   },
   {
     label: "Qualité et audit",
-    chemin: "/qualite",
+    chemin: "/mes-feedbacks",
     icone: ShieldCheck,
-    roles: [3]
+    roles: [1, 2, 3]
   }
 ];
 
@@ -87,10 +89,14 @@ function DashboardLayout({ children, roleName }) {
   const idRole = user?.id_role;
 
   // Adapter le titre de la page documentaire selon le rôle.
-const titreActuel =
+  const titreActuel =
   location.pathname === "/documents" && idRole === 1
     ? "Mes documents"
-    : titresPages[location.pathname] || "Espace de travail";
+    : location.pathname === "/mes-feedbacks"
+      ? idRole === 3
+        ? "Qualité et audit"
+        : "Mes feedbacks"
+      : titresPages[location.pathname] || "Espace de travail";
 
   // Construire les initiales du compte.
   const initials = (
@@ -160,7 +166,9 @@ const titreActuel =
                 <span>
                   {menu.chemin === "/documents" && idRole === 1
                     ? "Mes documents"
-                    : menu.label}
+                    : menu.chemin === "/mes-feedbacks" && idRole !== 3
+                      ? "Mes feedbacks"
+                      : menu.label}
                 </span>
               </NavLink>
             );

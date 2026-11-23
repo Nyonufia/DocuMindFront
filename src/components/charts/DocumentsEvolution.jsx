@@ -1,4 +1,5 @@
 
+import { useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -12,33 +13,125 @@ import {
 import { ChartNoAxesCombined } from "lucide-react";
 import "./DocumentsEvolution.css";
 
-// Ce composant reçoit les données du graphique
-// depuis le tableau de bord administrateur.
+/*
+  DOCUMIND — ÉVOLUTION DES DOCUMENTS
+
+  Ce composant permet de visualiser :
+  - Les ajouts quotidiens de documents.
+  - Le total cumulé des ajouts sur la période.
+
+  Les données proviennent du tableau de bord administrateur.
+*/
 function DocumentsEvolution({ data = [] }) {
 
-  // Vérifier si des données existent avant
-  // d'essayer de dessiner le graphique.
-  const hasData = data.length > 0;
+  // Mode d'affichage sélectionné par l'administrateur.
+  const [mode, setMode] = useState("daily");
+
+  /*
+    Préparer les données pour Recharts.
+
+    Le calcul utilise reduce() pour éviter les mutations
+    de variables externes et respecter les règles React.
+  */
+  const donneesGraphique = useMemo(() => {
+
+    const resultat = data.reduce(
+      (acc, point) => {
+
+        // Nombre de documents ajoutés pendant la journée.
+        const valeur = Number(point.total);
+        const ajouts = Number.isFinite(valeur) ? valeur : 0;
+
+        // Calcul du total cumulé.
+        const nouveauCumul = acc.cumul + ajouts;
+
+        // Valeur affichée selon le mode choisi.
+        const nouveauPoint = {
+          ...point,
+          total: mode === "cumulative"
+            ? nouveauCumul
+            : ajouts
+        };
+
+        return {
+          cumul: nouveauCumul,
+          points: [...acc.points, nouveauPoint]
+        };
+      },
+      {
+        cumul: 0,
+        points: []
+      }
+    );
+
+    return resultat.points;
+
+  }, [data, mode]);
+
+  // Vérifier si des données sont disponibles.
+  const hasData = donneesGraphique.length > 0;
+
+  // Libellé utilisé dans le graphique et l'infobulle.
+  const libelle = mode === "daily"
+    ? "Documents ajoutés"
+    : "Documents cumulés";
 
   return (
     <section className="documents-chart">
 
       {/* En-tête du graphique. */}
       <div className="documents-chart-header">
+
         <div className="documents-chart-icon">
           <ChartNoAxesCombined size={22} />
         </div>
 
-        <h2>Évolution des documents</h2>
-        <span>(30 derniers jours)</span>
+        <div className="documents-chart-heading">
+          <h2>Évolution des documents</h2>
+          <span>(30 derniers jours)</span>
+        </div>
+
+        {/* Boutons de sélection du mode d'affichage. */}
+        <div
+          className="documents-chart-modes"
+          role="group"
+          aria-label="Mode d'affichage du graphique"
+        >
+
+          <button
+            type="button"
+            className={`documents-chart-mode ${
+              mode === "daily" ? "is-active" : ""
+            }`}
+            aria-pressed={mode === "daily"}
+            onClick={() => setMode("daily")}
+          >
+            Ajouts quotidiens
+          </button>
+
+          <button
+            type="button"
+            className={`documents-chart-mode ${
+              mode === "cumulative" ? "is-active" : ""
+            }`}
+            aria-pressed={mode === "cumulative"}
+            onClick={() => setMode("cumulative")}
+          >
+            Total cumulé
+          </button>
+
+        </div>
       </div>
 
-      {/* Afficher un graphique ou un état vide. */}
+      {/* Afficher le graphique lorsque des données existent. */}
       {hasData ? (
+
         <div className="documents-chart-area">
+
           <ResponsiveContainer width="100%" height="100%">
+
             <LineChart
-              data={data}
+              data={donneesGraphique}
               margin={{
                 top: 15,
                 right: 15,
@@ -46,24 +139,31 @@ function DocumentsEvolution({ data = [] }) {
                 bottom: 5
               }}
             >
-              {/* Lignes horizontales du graphique. */}
+
+              {/* Grille horizontale. */}
               <CartesianGrid
                 stroke="#24415f"
                 vertical={false}
               />
 
-              {/* Axe horizontal : dates. */}
+              {/* Axe des dates. */}
               <XAxis
                 dataKey="date"
                 stroke="#94a3b8"
-                tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                tick={{
+                  fill: "#cbd5e1",
+                  fontSize: 12
+                }}
                 tickLine={false}
               />
 
-              {/* Axe vertical : nombre de documents. */}
+              {/* Axe du nombre de documents. */}
               <YAxis
                 stroke="#94a3b8"
-                tick={{ fill: "#cbd5e1", fontSize: 12 }}
+                tick={{
+                  fill: "#cbd5e1",
+                  fontSize: 12
+                }}
                 tickLine={false}
                 allowDecimals={false}
               />
@@ -76,14 +176,17 @@ function DocumentsEvolution({ data = [] }) {
                   borderRadius: "10px",
                   color: "#ffffff"
                 }}
-                formatter={(value) => [value, "Documents"]}
+                formatter={(value) => [
+                  value,
+                  libelle
+                ]}
               />
 
               {/* Courbe principale. */}
               <Line
                 type="monotone"
                 dataKey="total"
-                name="Documents"
+                name={libelle}
                 stroke="#16a6ff"
                 strokeWidth={3}
                 dot={{
@@ -92,20 +195,35 @@ function DocumentsEvolution({ data = [] }) {
                   stroke: "#ffffff",
                   strokeWidth: 2
                 }}
-                activeDot={{ r: 6 }}
+                activeDot={{
+                  r: 6
+                }}
               />
+
             </LineChart>
+
           </ResponsiveContainer>
+
         </div>
+
       ) : (
+
+        /* Message affiché en absence de données. */
         <div className="documents-chart-empty">
+
           <ChartNoAxesCombined size={38} />
-          <p>Aucune donnée disponible pour le moment.</p>
+
+          <p>
+            Aucune donnée disponible pour le moment.
+          </p>
+
           <span>
             L'évolution des documents apparaîtra ici
             lorsque les statistiques seront disponibles.
           </span>
+
         </div>
+
       )}
 
     </section>

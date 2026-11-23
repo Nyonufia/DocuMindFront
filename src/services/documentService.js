@@ -130,3 +130,44 @@ export async function restaurerDocument(token, idDocument) {
 
   return traiterReponse(response);
 }
+
+
+/*
+  Enregistrer la consultation réelle d'un document.
+
+  Cette fonction est appelée lorsqu'un utilisateur
+  ouvre volontairement un document.
+
+  Le backend vérifie les autorisations et enregistre
+  la consultation dans le journal d'audit.
+*/
+export async function enregistrerConsultation(token, idDocument) {
+  const response = await fetch(
+    `${API_URL}/documents/${idDocument}/consulter`,
+    {
+      method: "POST",
+      headers: authHeaders(token)
+    }
+  );
+
+  return traiterReponse(response);
+}
+
+/*
+  Récupérer les derniers documents consultés
+  par l'utilisateur actuellement connecté.
+
+  Le backend retourne uniquement les documents
+  toujours accessibles à cet utilisateur.
+*/
+export async function obtenirDocumentsConsultes(token, limite = 3) {
+  const response = await fetch(
+    `${API_URL}/documents/consultations/recentes?limite=${limite}`,
+    {
+      method: "GET",
+      headers: authHeaders(token)
+    }
+  );
+
+  return traiterReponse(response);
+}

@@ -1,4 +1,3 @@
-
 /* ==========================================
    DOCUMIND — ÉVOLUTION DES DOCUMENTS
    ========================================== */
@@ -9,50 +8,82 @@
   min-width: 0;
   min-height: 330px;
   box-sizing: border-box;
-
   padding: 20px;
   border: 1px solid #31567c;
   border-radius: 14px;
-
-  background: linear-gradient(
-    135deg,
-    #10243b,
-    #08182d
-  );
+  background: linear-gradient(135deg, #10243b, #08182d);
 }
 
-/* En-tête avec icône et titre. */
+/* En-tête, titre et sélecteur de mode. */
 .documents-chart-header {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
 }
-
+.documents-chart-heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
 .documents-chart-header h2 {
   margin: 0;
   color: #ffffff;
   font-size: 18px;
   font-weight: 650;
 }
-
-.documents-chart-header span {
+.documents-chart-heading span {
   color: #cbd5e1;
   font-size: 13px;
 }
-
-/* Carré contenant l'icône. */
 .documents-chart-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 38px;
   height: 38px;
-
+  flex: 0 0 38px;
   color: #ffffff;
   background: #173d68;
   border-radius: 10px;
+}
+
+/* Boutons permettant de basculer entre les deux calculs. */
+.documents-chart-modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+  padding: 4px;
+  border: 1px solid #31567c;
+  border-radius: 10px;
+  background: #09192d;
+}
+.documents-chart-mode {
+  padding: 7px 10px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #cbd5e1;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.documents-chart-mode:hover {
+  background: #173d68;
+  color: #ffffff;
+}
+.documents-chart-mode.is-active {
+  background: #138eff;
+  color: #ffffff;
+}
+.documents-chart-mode:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
 }
 
 /* Zone du graphique Recharts. */
@@ -65,26 +96,28 @@
 /* Message lorsque les statistiques sont absentes. */
 .documents-chart-empty {
   min-height: 240px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12px;
-
   color: #60a5fa;
   text-align: center;
 }
-
 .documents-chart-empty p {
   margin: 0;
   color: #ffffff;
   font-weight: 600;
 }
-
 .documents-chart-empty span {
   max-width: 340px;
   color: #94a3b8;
   font-size: 13px;
   line-height: 1.6;
+}
+
+@media (max-width: 680px) {
+  .documents-chart { padding: 16px; }
+  .documents-chart-modes { width: 100%; margin-left: 0; }
+  .documents-chart-mode { flex: 1; }
 }

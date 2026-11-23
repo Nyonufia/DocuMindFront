@@ -1,4 +1,6 @@
 
+import { useNavigate } from "react-router-dom";
+
 import {
   Zap,
   UserPlus,
@@ -9,37 +11,51 @@ import {
 
 import "./QuickActions.css";
 
-// Définir les actions rapides de l'administrateur.
-// Chaque action possède un titre, une icône et une couleur.
+/*
+  DOCUMIND — ACTIONS RAPIDES ADMINISTRATEUR
+
+  Les actions utilisent les routes existantes
+  définies dans App.jsx.
+
+  Les autorisations restent contrôlées
+  par les routes protégées et le backend.
+*/
 const actions = [
   {
     id: "users",
     title: "Ajouter un utilisateur",
     icon: UserPlus,
-    color: "blue"
+    color: "blue",
+    route: "/utilisateurs?action=ajouter"
   },
   {
     id: "feedback",
     title: "Consulter les feedbacks",
     icon: MessageSquareText,
-    color: "purple"
+    color: "purple",
+    route: "/qualite"
   },
   {
     id: "access",
     title: "Gérer les accès",
     icon: ShieldCheck,
-    color: "green"
+    color: "green",
+    route: "/utilisateurs"
   },
   {
     id: "audit",
     title: "Consulter les audits",
     icon: ClipboardList,
-    color: "pink"
+    color: "pink",
+    route: "/qualite"
   }
 ];
 
 // Afficher les actions rapides du tableau de bord.
 function QuickActions() {
+
+  // Permet de naviguer sans recharger l'application.
+  const navigate = useNavigate();
 
   return (
     <section className="quick-actions">
@@ -50,23 +66,23 @@ function QuickActions() {
         <h2>Actions rapides</h2>
       </div>
 
-      {/* Générer les quatre cartes d'action. */}
+      {/* Générer les quatre boutons d'action. */}
       <div className="quick-actions-grid">
 
         {actions.map((action) => {
 
-          // Récupérer le composant d'icône.
           const Icon = action.icon;
 
           return (
-            <div
+            <button
               key={action.id}
+              type="button"
               className={`quick-action quick-action--${action.color}`}
+              onClick={() => navigate(action.route)}
             >
               <Icon size={26} strokeWidth={2} />
-
               <span>{action.title}</span>
-            </div>
+            </button>
           );
         })}
 

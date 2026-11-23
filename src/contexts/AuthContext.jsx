@@ -1,23 +1,136 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContextDefinition";
+
 import {
   loginUser,
   getCurrentUser,
   changePassword
 } from "../services/authService";
 
-// Fournir les informations de connexion à l'application.
+/*
+  DOCUMIND — CONTEXTE D'AUTHENTIFICATION
+
+  Fonctionnalités :
+  - Connexion à FastAPI
+  - Conservation du JWT dans sessionStorage
+  - Restauration de session après actualisation
+  - Vérification du profil utilisateur
+  - Changement obligatoire du mot de passe
+  - Déconnexion sécurisée
+*/
+
+const TOKEN_KEY = "documind_access_token";
+
+// Lire le JWT conservé pendant la session du navigateur.
+function lireToken() {
+  try {
+    return sessionStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+// Enregistrer ou supprimer le JWT.
+function enregistrerToken(token) {
+  try {
+    if (token) {
+      sessionStorage.setItem(TOKEN_KEY, token);
+    } else {
+      sessionStorage.removeItem(TOKEN_KEY);
+    }
+  } catch {
+    // Le stockage peut être indisponible dans certains navigateurs.
+  }
+}
+
 export function AuthProvider({ children }) {
 
-  // Informations de session conservées en mémoire.
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  /*
+    Initialiser l'état d'authentification.
 
-  // Indiquer si un changement de mot de passe est obligatoire.
-  const [mustChangePassword, setMustChangePassword] =
-    useState(false);
+    Un JWT éventuellement enregistré sera vérifié
+    auprès du backend avant d'autoriser l'accès.
+  */
+  const [session, setSession] = useState(() => ({
+    user: null,
+    token: null,
+    mustChangePassword: false,
+    authLoading: true
+  }));
 
-  // Authentifier l'utilisateur auprès de FastAPI.
+  const {
+    user,
+    token,
+    mustChangePassword,
+    authLoading
+  } = session;
+
+  /*
+    Restaurer la session lors du chargement.
+
+    getCurrentUser vérifie le JWT auprès de FastAPI.
+    Si celui-ci est invalide, la session est supprimée.
+  */
+  useEffect(() => {
+    let active = true;
+
+    async function restaurerSession() {
+      const savedToken = lireToken();
+
+      if (!savedToken) {
+        if (active) {
+          setSession({
+            user: null,
+            token: null,
+            mustChangePassword: false,
+            authLoading: false
+          });
+        }
+        return;
+      }
+
+      try {
+        const profile = await getCurrentUser(savedToken);
+
+        if (!active) return;
+
+        setSession({
+          user: profile,
+          token: savedToken,
+          mustChangePassword: Boolean(
+            profile.doit_changer_password
+          ),
+          authLoading: false
+        });
+
+      } catch {
+        if (!active) return;
+
+        enregistrerToken(null);
+
+        setSession({
+          user: null,
+          token: null,
+          mustChangePassword: false,
+          authLoading: false
+        });
+      }
+    }
+
+    restaurerSession();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  /*
+    Connexion d'un utilisateur.
+
+    Le profil est récupéré avant d'enregistrer
+    la nouvelle session.
+  */
   async function login(username, password) {
 
     const result = await loginUser(username, password);
@@ -26,13 +139,16 @@ export function AuthProvider({ children }) {
       result.access_token
     );
 
-    // Vérifier si le backend exige un nouveau mot de passe.
-    const passwordChangeRequired =
-      Boolean(profile.doit_changer_password);
+    enregistrerToken(result.access_token);
 
-    setToken(result.access_token);
-    setUser(profile);
-    setMustChangePassword(passwordChangeRequired);
+    setSession({
+      user: profile,
+      token: result.access_token,
+      mustChangePassword: Boolean(
+        profile.doit_changer_password
+      ),
+      authLoading: false
+    });
 
     return {
       ...result,
@@ -40,7 +156,13 @@ export function AuthProvider({ children }) {
     };
   }
 
-  // Modifier le mot de passe et renouveler la session.
+  /*
+    Modifier le mot de passe obligatoire.
+
+    L'ancien JWT est invalidé par FastAPI.
+    Une nouvelle authentification est effectuée
+    après le changement.
+  */
   async function completePasswordChange(
     ancienPassword,
     nouveauPassword,
@@ -53,14 +175,15 @@ export function AuthProvider({ children }) {
       );
     }
 
-    // Vérifier les deux saisies avant l'appel au backend.
     if (nouveauPassword !== confirmationPassword) {
       throw new Error(
         "Les nouveaux mots de passe ne correspondent pas."
       );
     }
 
-    // FastAPI modifie le mot de passe et invalide l'ancien JWT.
+    const username = user.username;
+
+    // Effectuer le changement dans FastAPI.
     await changePassword(
       token,
       ancienPassword,
@@ -68,14 +191,22 @@ export function AuthProvider({ children }) {
       confirmationPassword
     );
 
-    // L'ancien JWT ne doit plus être utilisé.
-    setToken(null);
-    setUser(null);
-    setMustChangePassword(false);
+    /*
+      L'ancien JWT n'est plus valide.
+      Supprimer immédiatement la session locale.
+    */
+    enregistrerToken(null);
 
-    // Demander un nouveau JWT avec le nouveau mot de passe.
+    setSession({
+      user: null,
+      token: null,
+      mustChangePassword: false,
+      authLoading: false
+    });
+
+    // Se reconnecter avec le nouveau mot de passe.
     const result = await loginUser(
-      user.username,
+      username,
       nouveauPassword
     );
 
@@ -83,27 +214,58 @@ export function AuthProvider({ children }) {
       result.access_token
     );
 
-    // Vérifier que le changement obligatoire est terminé.
     if (profile.doit_changer_password) {
       throw new Error(
         "Le changement de mot de passe reste obligatoire."
       );
     }
 
-    setToken(result.access_token);
-    setUser(profile);
+    // Enregistrer le nouveau JWT.
+    enregistrerToken(result.access_token);
+
+    setSession({
+      user: profile,
+      token: result.access_token,
+      mustChangePassword: false,
+      authLoading: false
+    });
 
     return profile;
   }
 
-  // Effacer la session lors de la déconnexion.
+  /*
+    Déconnecter l'utilisateur.
+
+    Supprimer le JWT enregistré et réinitialiser
+    toutes les informations d'authentification.
+  */
   function logout() {
-    setUser(null);
-    setToken(null);
-    setMustChangePassword(false);
+
+    enregistrerToken(null);
+
+    setSession({
+      user: null,
+      token: null,
+      mustChangePassword: false,
+      authLoading: false
+    });
   }
 
-  // Partager les données et fonctions avec React.
+  /*
+    Déterminer si l'utilisateur possède
+    une session authentifiée et utilisable.
+  */
+  const isAuthenticated = Boolean(
+    user &&
+    token &&
+    !mustChangePassword &&
+    !authLoading
+  );
+
+  /*
+    Partager les informations et les fonctions
+    avec les composants React.
+  */
   const value = {
     user,
     token,
@@ -111,9 +273,8 @@ export function AuthProvider({ children }) {
     logout,
     completePasswordChange,
     mustChangePassword,
-    isAuthenticated: Boolean(
-      user && token && !mustChangePassword
-    )
+    authLoading,
+    isAuthenticated
   };
 
   return (
@@ -122,4 +283,3 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-

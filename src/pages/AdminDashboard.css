@@ -1,60 +1,233 @@
+/* DocuMind — Tableau de bord Administrateur : palette commune Éditeur / Employé.
+   Styles isolés sous .admin-dashboard pour protéger les autres écrans. */
+.admin-dashboard {
+  --admin-bg: #080d18;
+  --admin-card: #111c32;
+  --admin-card-alt: #17253d;
+  --admin-border: #263650;
+  --admin-text: #f8fafc;
+  --admin-muted: #a6b4ca;
+  --admin-blue: #5599ff;
+  --admin-green: #31cf9c;
+  --admin-orange: #f5b658;
+  --admin-red: #f17b8b;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 12px 0 0;
+  color: var(--admin-text);
+  color-scheme: dark;
+}
 
-/* Les quatre cartes occupent toute la largeur disponible. */
-.admin-stats {
+.admin-dashboard *,
+.admin-dashboard *::before,
+.admin-dashboard *::after {
+  box-sizing: border-box;
+}
+
+/* En-tête identique au tableau de bord Éditeur. */
+.admin-dashboard .admin-heading {
+  margin-bottom: 29px;
+}
+
+.admin-dashboard .admin-eyebrow {
+  margin: 0 0 12px;
+  color: #5599ff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.admin-dashboard .admin-heading h1 {
+  margin: 0 0 12px;
+  font-size: clamp(28px, 2.7vw, 42px);
+  line-height: 1.15;
+  letter-spacing: -.8px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.admin-dashboard .admin-heading h1 span {
+  color: #397ce0;
+}
+
+.admin-dashboard .admin-subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #b2c1d9;
+}
+
+.admin-dashboard .admin-error {
+  padding: 12px 15px;
+  border: 1px solid #8b4354;
+  background: #44242e;
+  color: #ffb8c3;
+  border-radius: 9px;
+  margin: 0 0 18px;
+}
+
+/* Quatre cartes statistiques avec bordures d'accent. */
+.admin-dashboard .admin-stats {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  width: 100%;
-  max-width: none;
-  margin-top: 30px;
+  gap: 18px;
+  margin-bottom: 25px;
 }
 
-/* Adaptation aux écrans plus petits. */
-@media (max-width: 1100px) {
-  .admin-stats {
+.admin-dashboard .admin-stat-shell {
+  --admin-accent: #5599ff;
+  min-width: 0;
+  min-height: 165px;
+  border: 1px solid #2b4264;
+  border-top: 3px solid var(--admin-accent);
+  border-radius: 15px;
+  background: #111c32;
+  overflow: hidden;
+}
+
+.admin-dashboard .admin-stat-shell--cyan {
+  --admin-accent: #31cfce;
+}
+
+.admin-dashboard .admin-stat-shell--blue {
+  --admin-accent: #5599ff;
+}
+
+.admin-dashboard .admin-stat-shell--purple {
+  --admin-accent: #b59aff;
+}
+
+.admin-dashboard .admin-stat-shell--pink {
+  --admin-accent: #f17b8b;
+}
+
+.admin-dashboard .admin-stat-shell>* {
+  background: transparent !important;
+  color: #f8fafc;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  width: 100%;
+  height: 100%;
+}
+
+.admin-dashboard .admin-stat-shell h2,
+.admin-dashboard .admin-stat-shell h3,
+.admin-dashboard .admin-stat-shell strong,
+.admin-dashboard .admin-stat-shell [class*="value"] {
+  color: #f8fafc;
+}
+
+.admin-dashboard .admin-stat-shell p,
+.admin-dashboard .admin-stat-shell small,
+.admin-dashboard .admin-stat-shell [class*="description"] {
+  color: #a6b4ca;
+}
+
+.admin-dashboard .admin-stat-shell svg {
+  color: var(--admin-accent);
+}
+
+/* Panneaux des graphiques et de l'activité. */
+.admin-dashboard .admin-charts,
+.admin-dashboard .admin-bottom-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+  gap: 22px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+.admin-dashboard .admin-panel {
+  min-width: 0;
+  background: #111c32;
+  border: 1px solid #263650;
+  border-radius: 16px;
+  overflow: hidden;
+  color: #f8fafc;
+}
+
+.admin-dashboard .admin-panel>* {
+  max-width: 100%;
+  background-color: transparent !important;
+  color: inherit;
+  box-shadow: none !important;
+}
+
+.admin-dashboard .admin-panel h2,
+.admin-dashboard .admin-panel h3,
+.admin-dashboard .admin-panel h4 {
+  color: #f8fafc;
+}
+
+.admin-dashboard .admin-panel p,
+.admin-dashboard .admin-panel small,
+.admin-dashboard .admin-panel label {
+  color: #a6b4ca;
+}
+
+.admin-dashboard .admin-panel button,
+.admin-dashboard .admin-panel a {
+  transition: background .15s, border-color .15s;
+}
+
+.admin-dashboard .admin-panel button:focus-visible,
+.admin-dashboard .admin-panel a:focus-visible {
+  outline: 2px solid #5599ff;
+  outline-offset: 3px;
+}
+
+/* Styles génériques limités aux composants du tableau de bord.
+   Les composants ayant leur propre CSS peuvent nécessiter un ajustement ciblé. */
+.admin-dashboard .admin-panel [class*="card"],
+.admin-dashboard .admin-panel [class*="item"],
+.admin-dashboard .admin-panel [class*="action"] {
+  border-color: #2c3d59;
+}
+
+.admin-dashboard .admin-panel [class*="muted"],
+.admin-dashboard .admin-panel [class*="subtitle"] {
+  color: #a6b4ca;
+}
+
+@media (max-width: 1200px) {
+  .admin-dashboard .admin-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
 
-@media (max-width: 600px) {
-  .admin-stats {
+  .admin-dashboard .admin-charts,
+  .admin-dashboard .admin-bottom-section {
     grid-template-columns: 1fr;
   }
 }
 
-/* Deux graphiques côte à côte, comme sur la maquette. */
-.admin-charts {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: 20px;
-  width: 100%;
-  margin-top: 24px;
-}
-
-/* Empêcher les graphiques de dépasser leur colonne. */
-.admin-charts > * {
-  min-width: 0;
-}
-
-/* Une seule colonne sur les écrans plus étroits. */
-@media (max-width: 1100px) {
-  .admin-charts {
+@media (max-width: 650px) {
+  .admin-dashboard .admin-stats {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .admin-dashboard .admin-charts,
+  .admin-dashboard .admin-bottom-section {
+    gap: 14px;
+  }
+
+  .admin-dashboard .admin-heading h1 {
+    font-size: 30px;
   }
 }
 
-/* Activité récente à gauche et actions rapides à droite. */
-.admin-bottom-section {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  gap: 20px;
-  width: 100%;
-  margin-top: 24px;
+/* Supprimer les espaces inutiles en bas du tableau de bord. */
+.admin-dashboard {
+  padding-bottom: 0;
 }
 
-/* Adapter les panneaux aux écrans plus étroits. */
-@media (max-width: 1100px) {
-  .admin-bottom-section {
-    grid-template-columns: 1fr;
-  }
+.admin-dashboard .admin-bottom-section {
+  margin-bottom: 0;
+}
+
+/* Supprimer la marge inférieure du dernier panneau. */
+.admin-dashboard .admin-bottom-section > * {
+  margin-bottom: 0;
 }

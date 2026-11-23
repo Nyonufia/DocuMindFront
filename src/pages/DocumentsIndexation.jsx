@@ -18,10 +18,21 @@ import {
     FolderPlus,
     Folders,
     Pencil,
-    Power
+    Power,
+    ChevronLeft,
+    ChevronRight,
+    UsersRound,
+    UserPlus,
+    UserMinus
 } from "lucide-react";
 
 import { useAuth } from "../contexts/useAuth";
+import {
+    listerUtilisateursDisponibles,
+    listerUtilisateursCollection,
+    attribuerUtilisateurCollection,
+    retirerUtilisateurCollection
+} from "../services/collectionAccessService";
 
 import {
     listerDocuments,
@@ -29,7 +40,8 @@ import {
     indexerDocument,
     supprimerDocument,
     ajouterVersion,
-    obtenirDocument
+    obtenirDocument,
+    enregistrerConsultation
 } from "../services/documentService";
 
 import {
@@ -56,6 +68,7 @@ import "../styles/DocumentsIndexation.css";
 
 const FORMATS = [".pdf", ".docx", ".txt"];
 const TAILLE_MAX = 20 * 1024 * 1024;
+const DOCUMENTS_PAR_PAGE = 5;
 
 // Convertir les octets en une taille lisible.
 function formaterTaille(octets) {
@@ -99,7 +112,14 @@ function validerFichier(fichier) {
 }
 
 function DocumentsIndexation() {
-    const { token } = useAuth();
+    const { token, user } = useAuth();
+
+    // L'employé consulte uniquement ses documents autorisés.
+    // Les actions de gestion sont réservées à l'éditeur et à l'administrateur.
+    const estEmploye = user?.id_role === 1;
+    const estEditeur = user?.id_role === 2;
+    const peutGererDocuments = [2, 3].includes(user?.id_role);
+    const peutGererCollections = [2, 3].includes(user?.id_role);
 
     const [documents, setDocuments] = useState([]);
     const [collections, setCollections] = useState([]);
@@ -111,6 +131,21 @@ function DocumentsIndexation() {
     const [recherche, setRecherche] = useState("");
     const [filtreCollection, setFiltreCollection] = useState("");
     const [filtreStatut, setFiltreStatut] = useState("");
+    const [page, setPage] = useState(1);
+
+    // Fenêtre de gestion des autorisations documentaires (Éditeur uniquement).
+    const [modalAccesOuverte, setModalAccesOuverte] = useState(false);
+    const [collectionAcces, setCollectionAcces] = useState("");
+    // Deux formulaires indépendants pour attribuer ou révoquer un accès.
+    const [modeAcces, setModeAcces] = useState("attribution");
+    const [utilisateursDisponibles, setUtilisateursDisponibles] = useState([]);
+    const [utilisateursAssocies, setUtilisateursAssocies] = useState([]);
+    const [utilisateurAAjouter, setUtilisateurAAjouter] = useState("");
+    const [utilisateurARevoquer, setUtilisateurARevoquer] = useState("");
+    const [chargementAcces, setChargementAcces] = useState(false);
+    const [operationAcces, setOperationAcces] = useState(false);
+    const [erreurAcces, setErreurAcces] = useState("");
+    const [messageAcces, setMessageAcces] = useState("");
 
     const [modalImport, setModalImport] = useState(false);
     const [fichierImport, setFichierImport] = useState(null);
@@ -139,8 +174,100 @@ function DocumentsIndexation() {
         niveau_acces: "Interne"
     });
 
+    // Charger la liste des utilisateurs autorisés à être associés.
+    // Cette route de lecture seule ne permet pas à l'Éditeur de gérer les comptes.
+    useEffect(() => {
+        if (!modalAccesOuverte || !estEditeur || !token) return;
+        let actif = true;
+        listerUtilisateursDisponibles(token)
+            .then((resultat) => {
+                if (actif) setUtilisateursDisponibles(resultat.users ?? resultat.utilisateurs ?? []);
+            })
+            .catch((err) => { if (actif) setErreurAcces(err.message); });
+        return () => { actif = false; };
+    }, [modalAccesOuverte, estEditeur, token]);
+
+    // Charger les membres de la collection sélectionnée.
+    useEffect(() => {
+        if (!modalAccesOuverte || !estEditeur || !token || !collectionAcces) return;
+        let actif = true;
+        listerUtilisateursCollection(token, Number(collectionAcces))
+            .then((resultat) => {
+                if (actif) setUtilisateursAssocies(resultat.utilisateurs ?? []);
+            })
+            .catch((err) => { if (actif) setErreurAcces(err.message); })
+            .finally(() => { if (actif) setChargementAcces(false); });
+        return () => { actif = false; };
+    }, [modalAccesOuverte, estEditeur, token, collectionAcces]);
+
+    // Actualiser la liste des membres après chaque modification.
+    async function actualiserMembres(idCollection) {
+        const resultat = await listerUtilisateursCollection(token, Number(idCollection));
+        setUtilisateursAssocies(resultat.utilisateurs ?? []);
+    }
+
+    async function ajouterAcces(event) {
+        event.preventDefault();
+        if (!estEditeur || !collectionAcces || !utilisateurAAjouter) return;
+        setOperationAcces(true);
+        setErreurAcces("");
+        setMessageAcces("");
+        try {
+            await attribuerUtilisateurCollection(token, Number(collectionAcces), Number(utilisateurAAjouter));
+            await actualiserMembres(collectionAcces);
+            setUtilisateurAAjouter("");
+            setMessageAcces("Accès attribué avec succès.");
+        } catch (err) {
+            setErreurAcces(err.message);
+        } finally {
+            setOperationAcces(false);
+        }
+    }
+
+    // Révoquer uniquement une association existante, après confirmation.
+    async function revoquerAcces(event) {
+        event.preventDefault();
+        if (!estEditeur || !collectionAcces || !utilisateurARevoquer || operationAcces || chargementAcces) return;
+
+        const membre = utilisateursAssocies.find(
+            (utilisateur) => String(utilisateur.id_user) === String(utilisateurARevoquer)
+        );
+        if (!membre) {
+            setErreurAcces("Cet utilisateur n'est plus associé à la collection.");
+            return;
+        }
+
+        const collection = collections.find(
+            (element) => String(element.id_collection) === String(collectionAcces)
+        );
+        const confirme = window.confirm(
+            `Révoquer l'accès de ${membre.username} à la collection « ${collection?.collection_name ?? collectionAcces} » ?`
+        );
+        if (!confirme) return;
+
+        setOperationAcces(true);
+        setErreurAcces("");
+        setMessageAcces("");
+        try {
+            await retirerUtilisateurCollection(token, Number(collectionAcces), Number(membre.id_user));
+            setUtilisateurARevoquer("");
+            await actualiserMembres(collectionAcces);
+            setMessageAcces("Accès révoqué avec succès.");
+        } catch (err) {
+            setErreurAcces(err.message);
+        } finally {
+            setOperationAcces(false);
+        }
+    }
+
+    const idsAssocies = new Set(utilisateursAssocies.map((membre) => membre.id_user));
+    const utilisateursNonAssocies = utilisateursDisponibles.filter(
+        (membre) => membre.est_actif !== false && !idsAssocies.has(membre.id_user)
+    );
+
     // Préparer le formulaire pour une nouvelle collection ou une modification.
     function ouvrirFormulaireCollection(collection = null) {
+        if (!peutGererCollections) return;
         setErreur("");
         setMessage("");
         setCollectionEdition(collection);
@@ -259,6 +386,27 @@ function DocumentsIndexation() {
         });
     }, [documents, recherche, filtreCollection, filtreStatut]);
 
+    /*
+      Pagination appliquée après la recherche et les filtres.
+      Les statistiques et les opérations continuent à utiliser
+      l'ensemble des documents autorisés.
+    */
+    const totalPages = Math.max(
+        1,
+        Math.ceil(documentsFiltres.length / DOCUMENTS_PAR_PAGE)
+    );
+    const pageActuelle = Math.min(Math.max(page, 1), totalPages);
+    const debutPage = (pageActuelle - 1) * DOCUMENTS_PAR_PAGE;
+    const documentsAffiches = documentsFiltres.slice(
+        debutPage,
+        debutPage + DOCUMENTS_PAR_PAGE
+    );
+    const premierDocument = documentsFiltres.length ? debutPage + 1 : 0;
+    const dernierDocument = Math.min(
+        debutPage + DOCUMENTS_PAR_PAGE,
+        documentsFiltres.length
+    );
+
     // Statistiques calculées depuis les documents accessibles.
     const statistiques = useMemo(() => ({
         total: documents.length,
@@ -298,6 +446,7 @@ function DocumentsIndexation() {
     // Enregistrer une nouvelle collection ou les modifications apportées.
     async function enregistrerCollection(event) {
         event.preventDefault();
+        if (!peutGererCollections) return;
         const nom = formCollection.collection_name.trim();
         const description = formCollection.description.trim();
 
@@ -332,6 +481,7 @@ function DocumentsIndexation() {
 
     // Activer ou désactiver une collection via l'API.
     async function basculerStatutCollection(collection) {
+        if (!peutGererCollections) return;
         const nouveauStatut = !collection.est_active;
         await executerOperation(
             `collection-status-${collection.id_collection}`,
@@ -343,6 +493,7 @@ function DocumentsIndexation() {
     // Importer un nouveau fichier.
     async function soumettreImport(event) {
         event.preventDefault();
+        if (!peutGererDocuments) return;
 
         const erreurFichier = validerFichier(fichierImport);
 
@@ -375,6 +526,7 @@ function DocumentsIndexation() {
 
     // Lancer l'indexation du document sélectionné.
     async function lancerIndexation(document) {
+        if (!peutGererDocuments) return;
         await executerOperation(
             `index-${document.id_document ?? document.id_doc}`,
             () => indexerDocument(token, document.id_document ?? document.id_doc),
@@ -393,11 +545,26 @@ function DocumentsIndexation() {
                 document.id_document ?? document.id_doc
             );
 
+            // Ouvrir le lecteur existant après vérification des droits.
             setDocumentOuvert({
                 ...document,
                 ...informations,
                 id_doc: document.id_document ?? document.id_doc
             });
+
+            // Journaliser uniquement l'ouverture volontaire du document.
+            // Une erreur d'audit ne doit pas fermer le lecteur déjà ouvert.
+            try {
+                await enregistrerConsultation(
+                    token,
+                    document.id_document ?? document.id_doc
+                );
+            } catch (erreurAudit) {
+                console.error("Consultation non enregistrée :", erreurAudit);
+                setErreur(
+                    "Le document est ouvert, mais la consultation n'a pas pu être enregistrée."
+                );
+            }
         } catch (err) {
             setErreur(err.message);
         } finally {
@@ -445,6 +612,7 @@ function DocumentsIndexation() {
 
     // Effectuer une suppression logique après confirmation.
     async function supprimer(document) {
+        if (!peutGererDocuments) return;
         const confirme = window.confirm(
             `Supprimer le document « ${document.titre} » ?`
         );
@@ -461,6 +629,7 @@ function DocumentsIndexation() {
     // Ajouter une nouvelle version du document.
     async function soumettreVersion(event) {
         event.preventDefault();
+        if (!peutGererDocuments) return;
 
         if (!versionDocument) return;
 
@@ -495,22 +664,25 @@ function DocumentsIndexation() {
                 <div>
                     <h1>Documents et indexation</h1>
                     <p>
-                        Importez, organisez et indexez les documents
-                        accessibles dans DocuMind.
+                        {estEmploye
+                            ? "Consultez et téléchargez les documents auxquels vous avez accès."
+                            : "Importez, organisez et indexez les documents accessibles dans DocuMind."}
                     </p>
                 </div>
 
-                <button
-                    className="documents-primary-button"
-                    type="button"
-                    onClick={() => {
-                        setErreur("");
-                        setModalImport(true);
-                    }}
-                >
-                    <Upload size={18} />
-                    Importer un document
-                </button>
+                {peutGererDocuments && (
+                    <button
+                        className="documents-primary-button"
+                        type="button"
+                        onClick={() => {
+                            setErreur("");
+                            setModalImport(true);
+                        }}
+                    >
+                        <Upload size={18} />
+                        Importer un document
+                    </button>
+                )}
             </div>
 
             {/* Cartes de statistiques. */}
@@ -570,7 +742,10 @@ function DocumentsIndexation() {
                     <Search size={19} />
                     <input
                         value={recherche}
-                        onChange={(event) => setRecherche(event.target.value)}
+                        onChange={(event) => {
+                            setRecherche(event.target.value);
+                            setPage(1);
+                        }}
                         placeholder="Rechercher un document..."
                         aria-label="Rechercher un document"
                     />
@@ -578,7 +753,10 @@ function DocumentsIndexation() {
 
                 <select
                     value={filtreCollection}
-                    onChange={(event) => setFiltreCollection(event.target.value)}
+                    onChange={(event) => {
+                        setFiltreCollection(event.target.value);
+                        setPage(1);
+                    }}
                     aria-label="Filtrer par collection"
                 >
                     <option value="">Toutes les collections</option>
@@ -594,7 +772,10 @@ function DocumentsIndexation() {
 
                 <select
                     value={filtreStatut}
-                    onChange={(event) => setFiltreStatut(event.target.value)}
+                    onChange={(event) => {
+                        setFiltreStatut(event.target.value);
+                        setPage(1);
+                    }}
                     aria-label="Filtrer par statut"
                 >
                     <option value="">Tous les statuts</option>
@@ -618,6 +799,30 @@ function DocumentsIndexation() {
                     <RefreshCw size={17} />
                     Actualiser
                 </button>
+
+                {/* L'attribution des utilisateurs aux collections est réservée à l'Éditeur. */}
+                {estEditeur && (
+                    <button
+                        type="button"
+                        className="documents-manage-access"
+                        onClick={() => {
+                            setErreur("");
+                            setModeAcces("attribution");
+                            setCollectionAcces("");
+                            setUtilisateurAAjouter("");
+                            setUtilisateurARevoquer("");
+                            setModeAcces("attribution");
+                            setUtilisateursAssocies([]);
+                            setUtilisateursDisponibles([]);
+                            setErreurAcces("");
+                            setMessageAcces("");
+                            setModalAccesOuverte(true);
+                        }}
+                    >
+                        <UsersRound size={18} />
+                        Gérer les accès
+                    </button>
+                )}
             </div>
 
             {/* Tableau des documents. */}
@@ -635,7 +840,7 @@ function DocumentsIndexation() {
                     </thead>
 
                     <tbody>
-                        {!chargement && documentsFiltres.map((document) => {
+                        {!chargement && documentsAffiches.map((document) => {
                             const statut = statutDocument(document);
                             const occupe = Boolean(operation);
 
@@ -701,6 +906,8 @@ function DocumentsIndexation() {
                                                 <Download size={17} />
                                             </button>
 
+                                            {peutGererDocuments && (
+                                                <>
                                             <button
                                                 type="button"
                                                 title="Indexer"
@@ -731,6 +938,8 @@ function DocumentsIndexation() {
                                             >
                                                 <Trash2 size={17} />
                                             </button>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -756,8 +965,159 @@ function DocumentsIndexation() {
                 </table>
             </div>
 
+            {/* Navigation entre les pages de documents. */}
+            {!chargement && documentsFiltres.length > 0 && (
+                <div className="documents-pagination">
+                    <span className="documents-pagination-info">
+                        Affichage de {premierDocument} à {dernierDocument} sur {documentsFiltres.length} documents
+                    </span>
+                    <div className="documents-pagination-actions">
+                        <button
+                            type="button"
+                            disabled={pageActuelle <= 1}
+                            onClick={() => setPage(pageActuelle - 1)}
+                        >
+                            <ChevronLeft size={16} /> Précédent
+                        </button>
+                        <span>Page {pageActuelle} sur {totalPages}</span>
+                        <button
+                            type="button"
+                            disabled={pageActuelle >= totalPages}
+                            onClick={() => setPage(pageActuelle + 1)}
+                        >
+                            Suivant <ChevronRight size={16} />
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Gestion des autorisations réservée au rôle Éditeur. */}
+            {estEditeur && modalAccesOuverte && (
+                <div className="documents-modal-overlay">
+                    <div className="documents-modal documents-access-modal" role="dialog"
+                        aria-modal="true" aria-labelledby="documents-access-title">
+                        <div className="documents-modal-header">
+                            <h2 id="documents-access-title"><UsersRound size={21} /> Gérer les accès aux collections</h2>
+                            <button type="button" aria-label="Fermer"
+                                onClick={() => setModalAccesOuverte(false)} disabled={operationAcces}>
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        {/* Onglets sous le titre : une seule opération visible à la fois. */}
+                        <div className="documents-access-tabs" role="tablist" aria-label="Type de gestion des accès">
+                            <button type="button" role="tab" aria-selected={modeAcces === "attribution"}
+                                className={`documents-access-tab ${modeAcces === "attribution" ? "is-active" : ""}`}
+                                disabled={operationAcces}
+                                onClick={() => { setModeAcces("attribution"); setErreurAcces(""); setMessageAcces(""); }}>
+                                <UserPlus size={17} /> Attribuer l'accès
+                            </button>
+                            <button type="button" role="tab" aria-selected={modeAcces === "revocation"}
+                                className={`documents-access-tab ${modeAcces === "revocation" ? "is-active" : ""}`}
+                                disabled={operationAcces}
+                                onClick={() => { setModeAcces("revocation"); setUtilisateurARevoquer(""); setErreurAcces(""); setMessageAcces(""); }}>
+                                <UserMinus size={17} /> Révoquer un accès
+                            </button>
+                        </div>
+
+                        {erreurAcces && <p className="documents-access-error" role="alert">{erreurAcces}</p>}
+                        {messageAcces && <p className="documents-access-success" role="status">{messageAcces}</p>}
+
+                        {modeAcces === "attribution" ? (
+                            <form onSubmit={ajouterAcces} className="documents-access-form" role="tabpanel">
+                                <label>Collection documentaire
+                                    <select required value={collectionAcces} onChange={(event) => {
+                                        setCollectionAcces(event.target.value);
+                                        setUtilisateurAAjouter("");
+                                        setUtilisateurARevoquer("");
+                                        setUtilisateursAssocies([]);
+                                        setErreurAcces("");
+                                        setMessageAcces("");
+                                        setChargementAcces(Boolean(event.target.value));
+                                    }} disabled={operationAcces}>
+                                        <option value="">Choisir une collection</option>
+                                        {collections.map((collection) => (
+                                            <option key={collection.id_collection} value={collection.id_collection}>
+                                                {collection.collection_name}{!collection.est_active ? " (inactive)" : ""}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                                <label>Utilisateur à autoriser
+                                    <select required value={utilisateurAAjouter}
+                                        onChange={(event) => setUtilisateurAAjouter(event.target.value)}
+                                        disabled={operationAcces || chargementAcces || !collectionAcces ||
+                                            !collections.find(c => String(c.id_collection) === collectionAcces)?.est_active}>
+                                        <option value="">{!collectionAcces ? "Choisir d'abord une collection" : "Choisir un utilisateur"}</option>
+                                        {utilisateursNonAssocies.map((membre) => (
+                                            <option key={membre.id_user} value={membre.id_user}>
+                                                {membre.prenom || membre.nom ? `${membre.prenom ?? ""} ${membre.nom ?? ""} — ` : ""}{membre.username}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+                                {collectionAcces && !chargementAcces && utilisateursNonAssocies.length === 0 && (
+                                    <p className="documents-help">Aucun utilisateur actif supplémentaire à attribuer à cette collection.</p>
+                                )}
+                                <button type="submit" className="documents-primary-button"
+                                    disabled={operationAcces || chargementAcces || !utilisateurAAjouter ||
+                                        !collections.find(c => String(c.id_collection) === collectionAcces)?.est_active}>
+                                    <UserPlus size={17} /> {operationAcces ? "Enregistrement..." : "Attribuer l'accès"}
+                                </button>
+                            </form>
+                        ) : (
+                            <form onSubmit={revoquerAcces} className="documents-access-form" role="tabpanel">
+                                {/* Choisir la collection dont on souhaite retirer une autorisation. */}
+                                <label>Collection documentaire
+                                    <select required value={collectionAcces} onChange={(event) => {
+                                        setCollectionAcces(event.target.value);
+                                        setUtilisateurARevoquer("");
+                                        setUtilisateurAAjouter("");
+                                        setUtilisateurARevoquer("");
+                                        setUtilisateursAssocies([]);
+                                        setErreurAcces("");
+                                        setMessageAcces("");
+                                        setChargementAcces(Boolean(event.target.value));
+                                    }} disabled={operationAcces}>
+                                        <option value="">Choisir une collection</option>
+                                        {collections.map((collection) => (
+                                            <option key={collection.id_collection} value={collection.id_collection}>
+                                                {collection.collection_name}{!collection.est_active ? " (inactive)" : ""}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+
+                                {/* Proposer uniquement les utilisateurs déjà associés à cette collection. */}
+                                <label>Utilisateur ayant accès
+                                    <select required value={utilisateurARevoquer}
+                                        onChange={(event) => setUtilisateurARevoquer(event.target.value)}
+                                        disabled={operationAcces || chargementAcces || !collectionAcces}>
+                                        <option value="">{!collectionAcces ? "Choisir d'abord une collection" :
+                                            chargementAcces ? "Chargement des utilisateurs..." : "Sélectionner un utilisateur associé"}</option>
+                                        {utilisateursAssocies.map((membre) => (
+                                            <option key={membre.id_user} value={membre.id_user}>
+                                                {membre.username}{!membre.est_actif ? " (compte inactif)" : ""}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </label>
+
+                                {collectionAcces && !chargementAcces && utilisateursAssocies.length === 0 && (
+                                    <p className="documents-help">Aucun utilisateur n'a actuellement accès à cette collection.</p>
+                                )}
+                                <button type="submit" className="documents-primary-button documents-revoke-button"
+                                    disabled={operationAcces || chargementAcces || !collectionAcces || !utilisateurARevoquer}>
+                                    <UserMinus size={17} /> {operationAcces ? "Révocation..." : "Révoquer l'accès"}
+                                </button>
+                            </form>
+                        )}
+                    </div>
+                </div>
+            )}
+
             {/* Fenêtre d'importation. */}
-            {modalImport && (
+            {peutGererDocuments && modalImport && (
                 <div className="documents-modal-overlay">
                     <form
                         className="documents-modal"
@@ -832,7 +1192,7 @@ function DocumentsIndexation() {
             )}
 
             {/* Fenêtre d'ajout d'une version. */}
-            {versionDocument && (
+            {peutGererDocuments && versionDocument && (
                 <div className="documents-modal-overlay">
                     <form
                         className="documents-modal"
@@ -885,6 +1245,7 @@ function DocumentsIndexation() {
             )}
 
             {/* Boutons fixes au centre de la zone de travail. */}
+            {peutGererCollections && (
             <div className="documents-collections-fixed">
                 <button type="button" className="documents-collection-create"
                     onClick={() => ouvrirFormulaireCollection()} disabled={Boolean(operation)}>
@@ -896,9 +1257,10 @@ function DocumentsIndexation() {
                     <Folders size={18} /> Gérer les collections
                 </button>
             </div>
+            )}
 
             {/* Formulaire de création ou de modification d'une collection. */}
-            {modalNouvelleCollection && (
+            {peutGererCollections && modalNouvelleCollection && (
                 <div className="documents-modal-overlay">
                     <form className="documents-modal" onSubmit={enregistrerCollection}
                         role="dialog" aria-modal="true" aria-label="Formulaire de collection">
@@ -944,7 +1306,7 @@ function DocumentsIndexation() {
             )}
 
             {/* Liste des collections et commandes de gestion. */}
-            {modalGestionCollections && (
+            {peutGererCollections && modalGestionCollections && (
                 <div className="documents-modal-overlay">
                     <div className="documents-modal documents-collections-modal"
                         role="dialog" aria-modal="true" aria-label="Gérer les collections">

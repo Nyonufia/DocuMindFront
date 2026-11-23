@@ -1,0 +1,340 @@
+/* DOCUMIND — MES FEEDBACKS / QUALITÉ ET AUDIT */
+.feedback-page {
+    color: #f8fafc;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 12px 0 24px
+}
+
+.feedback-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 24px
+}
+
+.feedback-eyebrow {
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #5599ff;
+    font-weight: 700
+}
+
+.feedback-heading h1 {
+    margin: 6px 0;
+    font-size: 29px
+}
+
+.feedback-heading p {
+    color: #a6b4ca;
+    margin: 0
+}
+
+.feedback-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid #344762;
+    background: #17253d;
+    color: #e2e8f0;
+    border-radius: 9px;
+    padding: 11px 15px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600
+}
+
+.feedback-secondary:disabled {
+    opacity: .55;
+    cursor: not-allowed
+}
+
+.feedback-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px
+}
+
+.feedback-stats>div {
+    background: #111c32;
+    border: 1px solid #263650;
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px
+}
+
+.feedback-stats span {
+    color: #a6b4ca;
+    font-size: 14px
+}
+
+.feedback-stats strong {
+    font-size: 28px
+}
+
+.feedback-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px
+}
+
+.feedback-tabs button {
+    background: #17253d;
+    color: #cbd5e1;
+    border: 1px solid #344762;
+    border-radius: 9px;
+    padding: 11px 16px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer
+}
+
+.feedback-tabs button.active {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #fff
+}
+
+.feedback-panel {
+    background: #111c32;
+    border: 1px solid #263650;
+    border-radius: 15px;
+    overflow: hidden
+}
+
+.feedback-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px
+}
+
+.feedback-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #344762;
+    background: #0b1425;
+    border-radius: 9px;
+    padding: 0 12px;
+    flex: 1;
+    max-width: 620px;
+    color: #a6b4ca
+}
+
+.feedback-search input {
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: #fff;
+    width: 100%;
+    padding: 12px 0;
+    font: inherit
+}
+
+.feedback-toolbar select {
+    border: 1px solid #344762;
+    border-radius: 9px;
+    background: #0b1425;
+    color: #fff;
+    padding: 11px;
+    font: inherit
+}
+
+.feedback-counts {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 0 18px 18px;
+    color: #a6b4ca;
+    font-size: 13px
+}
+
+.feedback-counts span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px
+}
+
+.feedback-table-scroll {
+    overflow-x: auto
+}
+
+.feedback-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 750px
+}
+
+.feedback-table th,
+.feedback-table td {
+    padding: 15px 17px;
+    border-top: 1px solid #263650;
+    font-size: 14px;
+    vertical-align: top
+}
+
+.feedback-table th {
+    color: #a6b4ca;
+    font-weight: 600;
+    background: #17253d
+}
+
+.feedback-comment {
+    max-width: 430px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: #cbd5e1
+}
+
+.feedback-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap
+}
+
+.feedback-status--useful {
+    background: #123d34;
+    color: #31cf9c
+}
+
+.feedback-status--not-useful {
+    background: #493321;
+    color: #f5b658
+}
+
+.feedback-message,
+.feedback-empty {
+    padding: 36px 20px;
+    text-align: center;
+    color: #a6b4ca
+}
+
+.feedback-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px
+}
+
+.feedback-empty p {
+    margin: 0
+}
+
+.feedback-error {
+    margin: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    color: #fecaca;
+    background: #421c29
+}
+
+.feedback-page button:focus-visible,
+.feedback-page input:focus-visible,
+.feedback-page select:focus-visible {
+    outline: 2px solid #5599ff;
+    outline-offset: 2px
+}
+
+@media(max-width:950px) {
+    .feedback-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+}
+
+@media(max-width:700px) {
+    .feedback-stats {
+        grid-template-columns: 1fr
+    }
+
+    .feedback-heading h1 {
+        font-size: 24px
+    }
+
+    .feedback-toolbar {
+        flex-direction: column;
+        align-items: stretch
+    }
+
+    .feedback-search {
+        max-width: none
+    }
+}
+
+
+/* =========================================
+   DOCUMIND — PAGINATION DES FEEDBACKS
+========================================= */
+
+.feedback-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 20px;
+  border-top: 1px solid #263650;
+  background: #111c32;
+}
+
+.feedback-pagination-info {
+  color: #a6b4ca;
+  font-size: 14px;
+}
+
+.feedback-pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.feedback-pagination-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #17253d;
+  color: #e2e8f0;
+  border: 1px solid #344762;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.feedback-pagination-actions button:hover:not(:disabled) {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.feedback-pagination-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .feedback-pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .feedback-pagination-actions {
+    justify-content: space-between;
+  }
+}

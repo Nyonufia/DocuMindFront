@@ -11,6 +11,8 @@ import { useAuth } from "./contexts/useAuth";
 
 import RechercheDocumentaire from "./pages/RechercheDocumentaire";
 import DocumentsIndexation from "./pages/DocumentsIndexation";
+import UtilisateursAcces from "./pages/UtilisateursAcces";
+import MesFeedbacks from "./pages/MesFeedbacks";
 
 // Page provisoire pour les fonctionnalités à développer.
 function PageEnConstruction({ titre }) {
@@ -35,12 +37,23 @@ function TableauDeBord() {
 
 // Protéger les pages selon l'authentification et les rôles.
 function PageProtegee({ children, roles }) {
-  const { user, isAuthenticated } = useAuth();
+  const {
+    user,
+    isAuthenticated,
+    authLoading
+  } = useAuth();
 
+  // Attendre la vérification de la session.
+  if (authLoading) {
+    return <p>Vérification de la session...</p>;
+  }
+
+  // Rediriger uniquement si la session est absente ou invalide.
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
+  // Vérifier les autorisations du rôle.
   if (roles && !roles.includes(user?.id_role)) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -68,7 +81,11 @@ function PageAvecLayout({ titre, children }) {
 
 // Définir les routes principales de DocuMind.
 function App() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, authLoading } = useAuth();
+
+  if (authLoading) {
+    return <p>Vérification de la session...</p>;
+  }
 
   return (
     <BrowserRouter>
@@ -106,13 +123,32 @@ function App() {
           }
         />
 
-        {/* Documents et indexation : Administrateur et Éditeur */}
+        {/*
+      Documents :
+      - Administrateur : gestion des documents autorisés
+      - Éditeur : gestion des documents
+      - Employé : consultation et téléchargement uniquement
+
+      Les autorisations des opérations restent
+      contrôlées par le backend FastAPI.
+    */}
         <Route
           path="/documents"
           element={
-            <PageProtegee roles={[2, 3]}>
-              <PageAvecLayout titre="Documents et indexation">
+            <PageProtegee roles={[1, 2, 3]}>
+              <PageAvecLayout titre="Documents">
                 <DocumentsIndexation />
+              </PageAvecLayout>
+            </PageProtegee>
+          }
+        />
+
+        <Route
+          path="/mes-feedbacks"
+          element={
+            <PageProtegee roles={[1, 2, 3]}>
+              <PageAvecLayout>
+                <MesFeedbacks />
               </PageAvecLayout>
             </PageProtegee>
           }
@@ -123,7 +159,9 @@ function App() {
           path="/utilisateurs"
           element={
             <PageProtegee roles={[3]}>
-              <PageAvecLayout titre="Utilisateurs et accès" />
+              <PageAvecLayout titre="Utilisateurs et accès">
+                <UtilisateursAcces />
+              </PageAvecLayout>
             </PageProtegee>
           }
         />
